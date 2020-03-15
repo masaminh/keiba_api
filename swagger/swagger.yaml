@@ -1,0 +1,49 @@
+swagger: '2.0'
+
+info:
+  version: "1.0.0"
+  title: keiba_api
+
+paths:
+  /1/races:
+    get:
+      description: |
+        レース一覧を取得する.
+      parameters:
+        -
+          name: date
+          in: query
+          description: レース一覧を取得する日付
+          required: true
+          type: string
+          format: date
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          schema:
+            title: ArrayOfRaces
+            type: array
+            items:
+              $ref: "#/definitions/Race"
+
+definitions:
+  Race:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "2019122210611"
+      courseid:
+        type: string
+        example: "106"
+      coursename:
+        type: string
+        example: "中山"
+      number:
+        type: integer
+        format: int32
+        example: 11
+      name:
+        type: string
+        example: 有馬記念
