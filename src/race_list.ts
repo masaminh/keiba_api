@@ -7,16 +7,16 @@ type Cheerio = ReturnType<typeof cheerio.load>;
 export default abstract class RaceList {
   private key: string;
 
-  protected $: CheerioStatic;
+  protected $: cheerio.Root;
 
-  public constructor(key: string, body: CheerioStatic) {
+  public constructor(key: string, body: cheerio.Root) {
     this.key = key;
     this.$ = body;
   }
 
-  protected abstract getRaceNumber(elm: CheerioElement): number;
+  protected abstract getRaceNumber(elm: cheerio.Element): number;
 
-  protected abstract getRaceName(elm: CheerioElement): string;
+  protected abstract getRaceName(elm: cheerio.Element): string;
 
   public getRaces(): Race[] {
     const splittedKey = this.key.split('/');

@@ -4,12 +4,12 @@ import RaceList from './race_list';
 type Cheerio = ReturnType<typeof cheerio.load>;
 
 export default class extends RaceList {
-  protected getRaceNumber(elm: CheerioElement): number {
+  protected getRaceNumber(elm: cheerio.Element): number {
     const raceNumber = Number(this.$('th', elm).text());
     return raceNumber;
   }
 
-  protected getRaceName(elm: CheerioElement): string {
+  protected getRaceName(elm: cheerio.Element): string {
     const raceName = this.$('td:nth-of-type(2) a', elm).text();
     return raceName;
   }

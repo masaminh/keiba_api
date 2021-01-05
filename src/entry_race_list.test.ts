@@ -1,5 +1,5 @@
 import cheerio from 'cheerio';
-import EntryRaceList from '#/entry_race_list';
+import EntryRaceList from './entry_race_list';
 
 describe('EntryRaceList', (): void => {
   test('getRaces', () => {
