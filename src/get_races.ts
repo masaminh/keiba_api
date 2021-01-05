@@ -6,22 +6,20 @@ import Storage from './storage';
 
 const raceCalendarPrefix = 'jbis/race/calendar/';
 
-export default async function(date: moment.Moment): Promise<Race[]> {
+export default async function (date: moment.Moment): Promise<Race[]> {
   // 指定日の場ごとのファイル一覧を取得
   const keys = await Storage.getKeys(
     raceCalendarPrefix + date.format('YYYYMMDD')
   );
 
   const result = await Promise.all(
-    keys.map(async key => {
+    keys.map(async (key) => {
       // 指定日の場ごとのファイルの処理
       const body = await Storage.getContentString(key, 'windows-31j');
       const $ = cheerio.load(body);
 
       const raceList = RaceListFactory.create(key, $);
-      const races = raceList.getRaces();
-
-      return races;
+      return raceList.getRaces();
     })
   );
 
