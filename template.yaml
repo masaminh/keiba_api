@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  Region:
+    Type: String
+  Bucket:
+    Type: String
+Resources:
+  KeibaApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 30
+      Runtime: nodejs12.x
+      CodeUri: dist/
+      Handler: handler.handler
+      Events:
+        HttpAny:
+          Type: Api
+          Properties:
+            Path: '/{proxy+}'
+            Method: ANY
+      Environment:
+        Variables:
+          REGION:
+            Ref: Region
+          BUCKET:
+            Ref: Bucket
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource: "*"
+        - Version: 2012-10-17
+          Statement:
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+            Resource:
+              Fn::Sub: arn:aws:s3:::${Bucket}
+        - Version: 2012-10-17
+          Statement:
+            Effect: Allow
+            Action:
+              - s3:GetObject
+            Resource:
+              Fn::Sub: arn:aws:s3:::${Bucket}/*

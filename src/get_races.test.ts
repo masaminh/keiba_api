@@ -1,6 +1,6 @@
 import moment from 'moment';
-import GetRaces from '#/get_races';
-import Storage from '#/storage';
+import GetRaces from './get_races';
+import Storage from './storage';
 
 describe('get_races', () => {
   test('', () => {

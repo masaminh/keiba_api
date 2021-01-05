@@ -16,12 +16,10 @@ app.use((req, res, next) => {
 
 app.get('/v1/races', async (req, res) => {
   // TODO: パラメータチェック必要
-  const date = moment(req.query.date, ['YYYY-MM-DD']);
+  const dateString = req.query.date as string
+  const date = moment(dateString, ['YYYY-MM-DD']);
   const races = await getRaces(date);
   res.json(races);
 });
 
-const port = '8080';
-app.listen(port, () => {
-  console.log(`app start listening on port ${port}`); // eslint-disable-line
-});
+module.exports = app

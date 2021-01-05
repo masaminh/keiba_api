@@ -6,7 +6,7 @@ import ResultRaceList from './result_race_list';
 type Cheerio = ReturnType<typeof cheerio.load>;
 
 export default class {
-  public static create(key: string, $: CheerioStatic): RaceList {
+  public static create(key: string, $: cheerio.Root): RaceList {
     const header2 = $('.tbl-data-04 thead th:nth-of-type(2)').text();
 
     let raceList: RaceList;

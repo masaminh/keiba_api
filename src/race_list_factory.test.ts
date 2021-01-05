@@ -1,7 +1,7 @@
 import cheerio from 'cheerio';
-import RaceListFactory from '#/race_list_factory';
-import ResultRaceList from '#/result_race_list';
-import EntryRaceList from '#/entry_race_list';
+import RaceListFactory from './race_list_factory';
+import ResultRaceList from './result_race_list';
+import EntryRaceList from './entry_race_list';
 
 describe('RaceListFactory', (): void => {
   test('create ResultRaceList', (): void => {
