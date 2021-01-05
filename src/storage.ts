@@ -12,13 +12,12 @@ export default class {
   public static async getKeys(prefix: string): Promise<string[]> {
     const listParams = {
       Bucket: bucket,
-      Prefix: prefix,
+      Prefix: prefix
     };
 
     const objectsInfo = await s3.listObjectsV2(listParams).promise();
     const keys =
-      objectsInfo.Contents?.map((x) => x.Key ?? '')?.filter((x) => x !== '') ??
-      [];
+      objectsInfo.Contents?.map(x => x.Key ?? '')?.filter(x => x !== '') ?? [];
 
     return keys;
   }
@@ -28,7 +27,7 @@ export default class {
     encoding: string
   ): Promise<string> {
     const obj = await s3.getObject({ Bucket: bucket, Key: key }).promise();
-    const body = obj.Body as Buffer;
-    return body ? iconv.decode(body, encoding) : '';
+    const body = iconv.decode(obj.Body as Buffer, encoding);
+    return body;
   }
 }
