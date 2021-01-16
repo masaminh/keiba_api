@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import cheerio from 'cheerio';
 import Race from './race';
 import RaceListFactory from './race_list_factory';
@@ -6,10 +6,10 @@ import Storage from './storage';
 
 const raceCalendarPrefix = 'jbis/race/calendar/';
 
-export default async function (date: moment.Moment): Promise<Race[]> {
+export default async (date: DateTime): Promise<Race[]> => {
   // 指定日の場ごとのファイル一覧を取得
   const keys = await Storage.getKeys(
-    raceCalendarPrefix + date.format('YYYYMMDD')
+    raceCalendarPrefix + date.toFormat('yyyyMMdd')
   );
 
   const result = await Promise.all(
@@ -37,4 +37,4 @@ export default async function (date: moment.Moment): Promise<Race[]> {
   ]
 */
   return races;
-}
+};
