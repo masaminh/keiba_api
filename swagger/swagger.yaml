@@ -5,7 +5,7 @@ info:
   title: keiba_api
 
 paths:
-  /1/races:
+  /v1/races:
     get:
       description: |
         レース一覧を取得する.
@@ -40,10 +40,16 @@ definitions:
       coursename:
         type: string
         example: "中山"
-      number:
+      racenumber:
         type: integer
         format: int32
         example: 11
-      name:
+      racename:
         type: string
         example: 有馬記念
+    required:
+      - id
+      - courseid
+      - coursename
+      - racenumber
+      - racename

@@ -1,8 +1,6 @@
 import cheerio from 'cheerio';
-import Race from './race';
+import { Race } from './models';
 import Course from './course';
-
-type Cheerio = ReturnType<typeof cheerio.load>;
 
 export default abstract class RaceList {
   private key: string;
@@ -23,23 +21,19 @@ export default abstract class RaceList {
     const dateString = splittedKey.slice(-2, -1)[0];
     const courseId = splittedKey.slice(-1)[0];
 
-    const races: Race[] = this.$('.tbl-data-04 tbody tr')
+    return this.$('.tbl-data-04 tbody tr')
       .map((idx, elm) => {
         const number = this.getRaceNumber(elm);
         const name = this.getRaceName(elm);
-        const race: Race = {
+        return {
           id: dateString + courseId + `0${number}`.slice(-2),
           courseid: courseId,
           coursename: Course.Id2Name(courseId),
           racenumber: number,
-          racename: name
+          racename: name,
         };
-
-        return race;
       })
       .get()
-      .map(x => x as Race);
-
-    return races;
+      .map((x) => x as Race);
   }
 }
