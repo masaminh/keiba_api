@@ -6,6 +6,7 @@
   "author": "masaminh <masami.askw@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "models": "sw2dts swagger/swagger.yaml > src/models.ts",
     "build": "rm -rf dist && tsc && cp src/handler.js package.json dist && sam build",
     "test": "jest --coverage"
   },
@@ -27,6 +28,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
+    "sw2dts": "^2.6.3",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"

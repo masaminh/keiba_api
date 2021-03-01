@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import cheerio from 'cheerio';
-import Race from './race';
+import { Race } from './models';
 import RaceListFactory from './race_list_factory';
 import Storage from './storage';
 
