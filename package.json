@@ -6,7 +6,7 @@
   "author": "masaminh <masami.askw@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "models": "sw2dts swagger/swagger.yaml > src/models.ts",
+    "models": "sw2dts -o src/models.ts swagger/swagger.yaml && eslint src/models.ts --fix",
     "build": "rm -rf dist && tsc && cp src/handler.js package.json dist && sam build",
     "test": "jest --coverage"
   },
