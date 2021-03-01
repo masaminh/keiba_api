@@ -23,18 +23,5 @@ export default async (date: DateTime): Promise<Race[]> => {
     })
   );
 
-  const races = ([] as Race[]).concat(...result);
-
-  /*
-  const races = [
-    {
-      id: '2019122210611',
-      courseid: '106',
-      coursename: '中山',
-      number: 11,
-      name: '有馬記念'
-    }
-  ]
-*/
-  return races;
+  return ([] as Race[]).concat(...result);
 };
