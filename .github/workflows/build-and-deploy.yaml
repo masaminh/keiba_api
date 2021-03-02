@@ -1,0 +1,53 @@
+name: build-and-deploy
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master    
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Test
+        run: yarn test
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Install sam-cli
+        run: |
+          python -m pip install --upgrade pip
+          pip install awscli
+          pip install aws-sam-cli
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Build
+        run: yarn build
+      - name: Deploy
+        if: startsWith(github.ref, 'refs/heads/master')
+        run: sam deploy --stack-name KeibaApiProd --s3-bucket ${{ secrets.AWS_SAM_BUCKET_NAME }} --s3-prefix KeibaApiProd --capabilities CAPABILITY_IAM --parameter-overrides "Region=ap-northeast-1 Bucket=masaminh-keiba-cache-bucket"
