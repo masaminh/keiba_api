@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import GetRaces from './get_races';
 import Storage from './storage';
 
@@ -38,15 +38,15 @@ describe('get_races', () => {
       </body>
     </html>`;
     Storage.getContentString = jest.fn().mockResolvedValue(body);
-    GetRaces(moment('2020-01-05', ['YYYY-MM-DD'])).then(data =>
+    GetRaces(DateTime.fromISO('2020-01-05')).then((data) =>
       expect(data).toEqual([
         {
           id: '2020010510611',
           courseid: '106',
           coursename: '中山',
           racenumber: 11,
-          racename: '中山金杯'
-        }
+          racename: '中山金杯',
+        },
       ])
     );
   });
