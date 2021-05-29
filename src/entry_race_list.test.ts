@@ -37,8 +37,8 @@ describe('EntryRaceList', (): void => {
         courseid: '109',
         coursename: '阪神',
         racenumber: 11,
-        racename: '阪神大賞典'
-      }
+        racename: '阪神大賞典',
+      },
     ]);
   });
 });

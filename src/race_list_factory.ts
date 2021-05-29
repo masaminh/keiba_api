@@ -3,8 +3,6 @@ import RaceList from './race_list';
 import EntryRaceList from './entry_race_list';
 import ResultRaceList from './result_race_list';
 
-type Cheerio = ReturnType<typeof cheerio.load>;
-
 export default class {
   public static create(key: string, $: cheerio.Root): RaceList {
     const header2 = $('.tbl-data-04 thead th:nth-of-type(2)').text();

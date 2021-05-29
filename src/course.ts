@@ -22,12 +22,12 @@ const courseId2courseName = new Map([
   ['227', '園田'],
   ['228', '姫路'],
   ['231', '高知'],
-  ['232', '佐賀']
+  ['232', '佐賀'],
 ]);
 
 export default {
   Id2Name: (courseId: string): string => {
     const courseName = courseId2courseName.get(courseId);
     return courseName ?? '';
-  }
+  },
 };
