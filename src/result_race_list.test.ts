@@ -41,8 +41,8 @@ describe('ResultRaceList', (): void => {
         courseid: '106',
         coursename: '中山',
         racenumber: 11,
-        racename: '中山金杯'
-      }
+        racename: '中山金杯',
+      },
     ]);
   });
 });
