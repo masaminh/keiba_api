@@ -34,23 +34,14 @@ process.env.BUCKET = 'bucket';
 const storage = require('./storage').default;
 
 describe('Storage', (): void => {
-  test('getKeys', async () => {
-    const keys = await storage.getKeys('prefix1');
-    expect(keys).toEqual(['prefix/key1', 'prefix/key2']);
-  });
-});
-
-describe('Storage', (): void => {
-  test('getKeys_empty', async () => {
-    const keys = await storage.getKeys('prefix2');
-    expect(keys).toEqual([]);
-  });
-});
-
-describe('Storage', (): void => {
-  test('getKeys_key_null', async () => {
-    const keys = await storage.getKeys('prefix3');
-    expect(keys).toEqual([]);
+  test.each`
+    prefix       | expected                          | message
+    ${'prefix1'} | ${['prefix/key1', 'prefix/key2']} | ${'通常時'}
+    ${'prefix2'} | ${[]}                             | ${'listObjectsV2がContents: nullを返したときは空リストを返す'}
+    ${'prefix3'} | ${[]}                             | ${'listObjectsV2がKey: nullを返したときは空リストを返す'}
+  `('$message', async ({ prefix, expected }) => {
+    const keys = await storage.getKeys(prefix);
+    expect(keys).toEqual(expected);
   });
 });
 
