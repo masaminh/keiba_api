@@ -14,8 +14,29 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '12.x'
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Install awscli
+        run: |
+          python -m pip install --upgrade pip
+          pip install awscli
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
+          role-duration-seconds: 1200
+          role-session-name: SessionName
       - name: Install dependencies
         run: yarn --frozen-lockfile
+      - name: Copy testdata
+        run: |
+          aws s3 sync ${{ secrets.UNITTESTDATA_URI }} testdata
+          ls -l testdata
       - name: Test
         run: yarn test
       - name: Upload coverage
