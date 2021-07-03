@@ -26,7 +26,15 @@ paths:
             type: array
             items:
               $ref: "#/definitions/Race"
-
+  /v1/races/{raceid}/detail:
+    get:
+      description: レース詳細を取得する.
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: RaceDetail
+            $ref: "#/definitions/RaceDetail"
 definitions:
   Race:
     type: object
@@ -53,3 +61,29 @@ definitions:
       - coursename
       - racenumber
       - racename
+  RaceDetail:
+    type: object
+    properties:
+      raceinfo:
+        $ref: "#/definitions/Race"
+      horses:
+        type: array
+        items:
+          $ref: "#/definitions/HorseInRace"
+  HorseInRace:
+    type: object
+    properties:
+      bracketnumber:
+        type: integer
+        example: 3
+      horsenumber:
+        type: integer
+        example: 6
+      horseid:
+        type: string
+        example: 0001191589
+      horsename:
+        type: string
+        example: リスグラシュー
+    required:
+      - horsename

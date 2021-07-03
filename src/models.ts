@@ -1,3 +1,25 @@
+export interface HorseInRace {
+  /**
+   * example:
+   * 3
+   */
+  bracketnumber?: number;
+  /**
+   * example:
+   * 6
+   */
+  horsenumber?: number;
+  /**
+   * example:
+   * 0001191589
+   */
+  horseid?: string;
+  /**
+   * example:
+   * リスグラシュー
+   */
+  horsename: string;
+}
 export interface Race {
   /**
    * example:
@@ -24,4 +46,8 @@ export interface Race {
    * 有馬記念
    */
   racename: string;
+}
+export interface RaceDetail {
+  raceinfo?: Race;
+  horses?: HorseInRace[];
 }
