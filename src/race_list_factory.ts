@@ -4,15 +4,15 @@ import EntryRaceList from './entry_race_list';
 import ResultRaceList from './result_race_list';
 
 export default class {
-  public static create(key: string, $: cheerio.Root): RaceList {
+  public static create(raceid: string, $: cheerio.Root): RaceList {
     const header2 = $('.tbl-data-04 thead th:nth-of-type(2)').text();
 
     let raceList: RaceList;
 
     if (header2 === 'レース名') {
-      raceList = new ResultRaceList(key, $);
+      raceList = new ResultRaceList(raceid, $);
     } else {
-      raceList = new EntryRaceList(key, $);
+      raceList = new EntryRaceList(raceid, $);
     }
 
     return raceList;
