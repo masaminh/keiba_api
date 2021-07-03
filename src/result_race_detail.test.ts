@@ -4,14 +4,17 @@ import ResultRaceDetail from './result_race_detail';
 
 describe('ResultRaceDetail', (): void => {
   test.each`
-    key                                | file                                           | expectedRace                                                                                              | targetHorsePos | expectedHorse
-    ${'jbis/race/20210620/105/11.htm'} | ${'testdata/ResultRaceDetail_getRaceDetail_1'} | ${{ id: '2021062010511', courseid: '105', coursename: '東京', racenumber: 11, racename: 'ユニコーンＳ' }} | ${11}          | ${{ bracketnumber: 3, horsenumber: 5, horsename: 'イグナイター', horseid: '0001261958' }}
+    raceid             | file                                           | expectedRace                                                                                              | targetHorsePos | expectedHorse
+    ${'2021062010511'} | ${'testdata/ResultRaceDetail_getRaceDetail_1'} | ${{ id: '2021062010511', courseid: '105', coursename: '東京', racenumber: 11, racename: 'ユニコーンＳ' }} | ${11}          | ${{ bracketnumber: 3, horsenumber: 5, horsename: 'イグナイター', horseid: '0001261958' }}
   `(
     'getRaceDetail',
-    ({ key, file, expectedRace, targetHorsePos, expectedHorse }) => {
+    ({ raceid, file, expectedRace, targetHorsePos, expectedHorse }) => {
       const body = fs.readFileSync(file, 'utf-8');
 
-      const raceDetailInstance = new ResultRaceDetail(key, cheerio.load(body));
+      const raceDetailInstance = new ResultRaceDetail(
+        raceid,
+        cheerio.load(body)
+      );
       const raceDetail = raceDetailInstance.getRaceDetail();
       expect(raceDetail.raceinfo).toEqual(expectedRace);
       expect(raceDetail.horses).toBeDefined();

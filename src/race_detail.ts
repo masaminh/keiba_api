@@ -2,33 +2,34 @@ import cheerio from 'cheerio';
 import Course from './course';
 import { RaceDetail, HorseInRace } from './models';
 
+export interface HorseSelectors {
+  bracketNumber: string;
+  horseNumber: string;
+  horseAnchor: string;
+}
+
 export default abstract class {
-  private key: string;
+  private raceid: string;
 
   protected $: cheerio.Root;
 
-  public constructor(key: string, body: cheerio.Root) {
-    this.key = key;
+  public constructor(raceid: string, body: cheerio.Root) {
+    this.raceid = raceid;
     this.$ = body;
   }
 
   protected abstract getRaceName(): string;
 
-  protected abstract getHorse(elm: cheerio.Element): HorseInRace;
+  protected abstract getHorseSelectors(): HorseSelectors;
 
   public getRaceDetail(): RaceDetail {
-    const m = this.key.match(/^jbis\/race\/(\d{8})\/(\d{3})\/(\d{2}).htm$/);
-    if (m == null) {
-      throw Error();
-    }
-    const raceid = `${m[1]}${m[2]}${m[3]}`;
-    const courseid = m[2];
+    const courseid = this.raceid.substr(8, 3);
     const coursename = Course.Id2Name(courseid);
-    const racenumber = Number(m[3]);
+    const racenumber = Number(this.raceid.substr(11, 2));
     const racename = this.getRaceName();
     return {
       raceinfo: {
-        id: raceid,
+        id: this.raceid,
         courseid,
         coursename,
         racenumber,
@@ -48,5 +49,26 @@ export default abstract class {
   ): number | undefined {
     const text = this.$(selector, elm).text().trim();
     return text.match(/^\d+$/) ? Number(text) : undefined;
+  }
+
+  private getHorse(elm: cheerio.Element): HorseInRace {
+    const selectors = this.getHorseSelectors();
+    const bracketnumber = this.getNumberOrUndefined(
+      selectors.bracketNumber,
+      elm
+    );
+    const horsenumber = this.getNumberOrUndefined(selectors.horseNumber, elm);
+    const horseAnchor = this.$(selectors.horseAnchor, elm);
+    const horsename = horseAnchor.text().replace(/\(.+\)/, '');
+    const horseUrl = horseAnchor.attr().href;
+    const m = horseUrl.match(/^\/horse\/(.+)\/$/);
+    const horseid = m ? m[1] : undefined;
+
+    return {
+      bracketnumber,
+      horsenumber,
+      horseid,
+      horsename,
+    };
   }
 }
