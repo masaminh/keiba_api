@@ -5,6 +5,10 @@ Parameters:
     Type: String
   Bucket:
     Type: String
+  DomainName:
+    Type: String
+  HostedZoneId:
+    Type: String
 Resources:
   KeibaApiFunction:
     Type: AWS::Serverless::Function
@@ -19,6 +23,8 @@ Resources:
           Properties:
             Path: '/{proxy+}'
             Method: ANY
+            RestApiId:
+              Ref: KeibaApi
       Environment:
         Variables:
           REGION:
@@ -46,3 +52,28 @@ Resources:
               - s3:GetObject
             Resource:
               Fn::Sub: arn:aws:s3:::${Bucket}/*
+  KeibaApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      EndpointConfiguration:
+        Type: REGIONAL
+      Domain:
+        DomainName: 
+          Ref: DomainName
+        CertificateArn:
+          Ref: KeibaApiCert
+        Route53:
+          HostedZoneId:
+            Ref: HostedZoneId
+  KeibaApiCert:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName:
+        Ref: DomainName
+      DomainValidationOptions:
+        - DomainName:
+            Ref: DomainName
+          HostedZoneId:
+            Ref: HostedZoneId
+      ValidationMethod: DNS
