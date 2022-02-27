@@ -1,6 +1,8 @@
 import cheerio from 'cheerio';
-import { Race } from './models';
+import * as models from './models';
 import Course from './course';
+
+type Race = models.definitions['Race'];
 
 export default abstract class RaceList {
   private key: string;
