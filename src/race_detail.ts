@@ -60,7 +60,7 @@ export default abstract class {
     );
     const horsenumber = this.getNumberOrUndefined(selectors.horseNumber, elm);
     const horseAnchor = this.$(selectors.horseAnchor, elm);
-    const horsename = horseAnchor.text().replace(/\(.+\)$/, '');
+    const horsename = horseAnchor.text().replace(/\([A-Z]{2,3}\)$/, '');
     const horseUrl = horseAnchor.attr().href;
     const m = horseUrl.match(/^\/horse\/(.+)\/$/);
     const horseid = m ? m[1] : undefined;
