@@ -12,9 +12,9 @@ export default abstract class RaceList {
     this.$ = body;
   }
 
-  protected abstract getRaceNumber(elm: cheerio.Element): number;
+  protected abstract getRaceNumber(_elm: cheerio.Element): number;
 
-  protected abstract getRaceName(elm: cheerio.Element): string;
+  protected abstract getRaceName(_elm: cheerio.Element): string;
 
   public getRaces(): Race[] {
     const splittedKey = this.key.split('/');

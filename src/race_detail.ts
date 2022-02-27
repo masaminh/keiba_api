@@ -36,16 +36,14 @@ export default abstract class {
         racename,
       },
       horses: this.$('.tbl-data-04 tbody tr')
-        .map((_, elm) => {
-          return this.getHorse(elm);
-        })
+        .map((_, elm) => this.getHorse(elm))
         .get() as HorseInRace[],
     };
   }
 
   protected getNumberOrUndefined(
     selector: string,
-    elm: cheerio.Element
+    elm: cheerio.Element,
   ): number | undefined {
     const text = this.$(selector, elm).text().trim();
     return text.match(/^\d+$/) ? Number(text) : undefined;
@@ -55,7 +53,7 @@ export default abstract class {
     const selectors = this.getHorseSelectors();
     const bracketnumber = this.getNumberOrUndefined(
       selectors.bracketNumber,
-      elm
+      elm,
     );
     const horsenumber = this.getNumberOrUndefined(selectors.horseNumber, elm);
     const horseAnchor = this.$(selectors.horseAnchor, elm);

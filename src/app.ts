@@ -19,4 +19,4 @@ app.get('/v1/races/:raceid/detail', async (req, res) => {
   res.json(raceDetail);
 });
 
-module.exports = app;
+export default app;

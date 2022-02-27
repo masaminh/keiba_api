@@ -9,7 +9,7 @@ const raceCalendarPrefix = 'jbis/race/calendar/';
 export default async (date: DateTime): Promise<Race[]> => {
   // 指定日の場ごとのファイル一覧を取得
   const keys = await Storage.getKeys(
-    raceCalendarPrefix + date.toFormat('yyyyMMdd')
+    raceCalendarPrefix + date.toFormat('yyyyMMdd'),
   );
 
   const result = await Promise.all(
@@ -20,7 +20,7 @@ export default async (date: DateTime): Promise<Race[]> => {
 
       const raceList = RaceListFactory.create(key, $);
       return raceList.getRaces();
-    })
+    }),
   );
 
   return ([] as Race[]).concat(...result);
