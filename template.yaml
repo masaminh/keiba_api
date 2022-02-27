@@ -52,6 +52,12 @@ Resources:
               - s3:GetObject
             Resource:
               Fn::Sub: arn:aws:s3:::${Bucket}/*
+  KeibaApiFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName:
+        Fn::Sub: /aws/lambda/${KeibaApiFunction}
+      RetentionInDays: 30
   KeibaApi:
     Type: AWS::Serverless::Api
     Properties:
