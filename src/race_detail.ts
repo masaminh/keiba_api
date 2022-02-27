@@ -1,6 +1,9 @@
 import cheerio from 'cheerio';
 import Course from './course';
-import { RaceDetail, HorseInRace } from './models';
+import * as models from './models';
+
+type RaceDetail = models.definitions['RaceDetail'];
+type HorseInRace = models.definitions['HorseInRace'];
 
 export interface HorseSelectors {
   bracketNumber: string;

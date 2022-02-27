@@ -1,7 +1,9 @@
 import cheerio from 'cheerio';
-import { RaceDetail } from './models';
+import * as models from './models';
 import Storage from './storage';
 import RaceDetailFactory from './race_detail_factory';
+
+type RaceDetail = models.definitions['RaceDetail'];
 
 export default async (raceid: string): Promise<RaceDetail> => {
   const datestr = raceid.substr(0, 8);

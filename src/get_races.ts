@@ -1,8 +1,10 @@
 import { DateTime } from 'luxon';
 import cheerio from 'cheerio';
-import { Race } from './models';
+import * as models from './models';
 import RaceListFactory from './race_list_factory';
 import Storage from './storage';
+
+type Race = models.definitions['Race'];
 
 const raceCalendarPrefix = 'jbis/race/calendar/';
 
