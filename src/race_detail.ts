@@ -26,9 +26,9 @@ export default abstract class {
   protected abstract getHorseSelectors(): HorseSelectors;
 
   public getRaceDetail(): RaceDetail {
-    const courseid = this.raceid.substr(8, 3);
+    const courseid = this.raceid.substring(8, 11);
     const coursename = Course.Id2Name(courseid);
-    const racenumber = Number(this.raceid.substr(11, 2));
+    const racenumber = Number(this.raceid.substring(11, 13));
     const racename = this.getRaceName();
     return {
       raceinfo: {
