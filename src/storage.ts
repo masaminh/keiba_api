@@ -1,8 +1,11 @@
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
 import iconv from 'iconv-lite';
+import Log from './log';
 
 dotenv.config();
+
+const logger = Log.getLogger();
 
 const region = process.env.REGION ?? '';
 const bucket = process.env.BUCKET ?? '';
@@ -15,6 +18,7 @@ export default class {
       Prefix: prefix,
     };
 
+    logger.info('call listObjectV2', { params: listParams });
     const objectsInfo = await s3.listObjectsV2(listParams).promise();
     return (
       objectsInfo.Contents?.map((x) => x.Key ?? '')?.filter((x) => x !== '')
@@ -26,7 +30,9 @@ export default class {
     key: string,
     encoding: string,
   ): Promise<string> {
-    const obj = await s3.getObject({ Bucket: bucket, Key: key }).promise();
+    const params = { Bucket: bucket, Key: key };
+    logger.info('call getObject', { params });
+    const obj = await s3.getObject(params).promise();
     return iconv.decode(obj.Body as Buffer, encoding);
   }
 }
