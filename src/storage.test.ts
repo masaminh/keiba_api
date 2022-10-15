@@ -4,6 +4,12 @@ const awsMock = require('aws-sdk-mock');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
 
+const { Logger } = require('@aws-lambda-powertools/logger');
+
+jest.mock('@aws-lambda-powertools/logger');
+const LoggerMock = Logger as jest.Mock;
+LoggerMock.mockImplementation(() => ({ info: jest.fn() }));
+
 awsMock.setSDK(path.resolve('node_modules/aws-sdk'));
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

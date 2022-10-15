@@ -9,6 +9,21 @@
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.0"
 
+"@aws-lambda-powertools/commons@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@aws-lambda-powertools/commons/-/commons-1.2.1.tgz#4d0ba33576b8ee379aeff3a51087ab88f881cf40"
+  integrity sha512-wHdAgzXQfRqcm6kIuxrQjKL8x02sVTMc7rcMJPkHU1DsGNL7Z3g0H+tkrlmFimGkRqPv724J2OqNdEvBJKaoMQ==
+
+"@aws-lambda-powertools/logger@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@aws-lambda-powertools/logger/-/logger-1.2.1.tgz#069c94d13d89a761216e5d9a872ff05f5b95488f"
+  integrity sha512-Yb9uOi49h7yOut/NujnHjTd+sP4nBMsnuxMIsNtKvBFZ2ftaPlGAfqOdevqC3ImcIXlyiypxXd1gQmEMq3uJ8Q==
+  dependencies:
+    "@aws-lambda-powertools/commons" "^1.2.1"
+    lodash.clonedeep "^4.5.0"
+    lodash.merge "^4.6.2"
+    lodash.pickby "^4.6.0"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.16.7":
   version "7.16.7"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.16.7.tgz#44416b6bd7624b998f5b1af5d470856c40138789"
@@ -536,6 +551,11 @@
   dependencies:
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
+
+"@middy/core@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@middy/core/-/core-3.6.0.tgz#dc8f3da97c4f7caeed2695fa536f80da63dd61be"
+  integrity sha512-l3VyDBVqazLuQ8/ABEYwc1Y6EQwPvY8nYbBKToJz4IfSTIwmeEIzAFh9YhpuwHxH7qKhmw6AQh4nOidsx80yCA==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -3145,6 +3165,11 @@ locate-path@^5.0.0:
   dependencies:
     p-locate "^4.1.0"
 
+lodash.clonedeep@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
+  integrity sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==
+
 lodash.get@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
@@ -3159,6 +3184,11 @@ lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
+
+lodash.pickby@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.pickby/-/lodash.pickby-4.6.0.tgz#7dea21d8c18d7703a27c704c15d3b84a67e33aff"
+  integrity sha512-AZV+GsS/6ckvPOVQPXSiFFacKvKB4kOQu6ynt9wz0F3LO4R9Ij4K1ddYsIytDpSgLz88JHd9P+oaLeej5/Sl7Q==
 
 lodash@^4.7.0:
   version "4.17.21"
