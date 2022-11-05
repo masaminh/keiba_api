@@ -24,18 +24,21 @@ export default abstract class RaceList {
     const courseId = splittedKey.slice(-1)[0];
 
     return this.$('.tbl-data-04 tbody tr')
-      .map((idx, elm) => {
+      .toArray()
+      .flatMap((elm) => {
         const number = this.getRaceNumber(elm);
+        if (Number.isNaN(number)) {
+          return [];
+        }
+
         const name = this.getRaceName(elm);
-        return {
+        return [{
           id: dateString + courseId + `0${number}`.slice(-2),
           courseid: courseId,
           coursename: Course.Id2Name(courseId),
           racenumber: number,
           racename: name,
-        };
-      })
-      .get()
-      .map((x) => x as Race);
+        }];
+      });
   }
 }

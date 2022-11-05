@@ -18,4 +18,13 @@ describe('EntryRaceList', (): void => {
       racename: '安田記念',
     });
   });
+
+  test('getRaces (no race number)', async () => {
+    const key = 'jbis/race/calendar/20221109/221';
+    const body = fs.readFileSync('testdata/EntryRaceList_getRace_2', 'utf-8');
+
+    const raceList = new EntryRaceList(key, cheerio.load(body));
+    const races = raceList.getRaces();
+    expect(races).toHaveLength(0);
+  });
 });
