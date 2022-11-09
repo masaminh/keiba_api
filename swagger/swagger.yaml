@@ -35,6 +35,8 @@ paths:
           schema:
             title: RaceDetail
             $ref: "#/definitions/RaceDetail"
+        404:
+          description: "{raceid} not found."
 definitions:
   Race:
     type: object

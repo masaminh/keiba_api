@@ -29,6 +29,8 @@ export interface paths {
         200: {
           schema: definitions["RaceDetail"];
         };
+        /** {raceid} not found. */
+        404: unknown;
       };
     };
   };

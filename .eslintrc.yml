@@ -15,7 +15,8 @@ plugins:
 rules:
   import/no-unresolved: error
   import/extensions: off
-  no-unused-vars:
+  no-unused-vars: off
+  "@typescript-eslint/no-unused-vars": 
     - 2
     - argsIgnorePattern: '^_'
 settings:

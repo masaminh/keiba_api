@@ -1,4 +1,5 @@
 import fs from 'fs';
+import * as TE from 'fp-ts/TaskEither';
 import GetRaceDetail from './get_racedetail';
 import Storage from './storage';
 
@@ -17,11 +18,10 @@ describe('get_racedetail', () => {
     Storage.getKeys = jest.fn().mockResolvedValue([key]);
 
     const body = fs.readFileSync(file, 'utf-8');
-    Storage.getContentString = jest.fn().mockResolvedValue(body);
-    const result = await GetRaceDetail(expected.id);
+    Storage.getContentString = jest.fn().mockReturnValue(TE.right(body));
+    const result = await GetRaceDetail(expected.id)();
 
-    expect(result.raceinfo).toEqual(expected);
-
-    expect(result.horses?.length).toEqual(expectedNum);
+    expect((result as any).right.raceinfo).toEqual(expected);
+    expect((result as any).right.horses?.length).toEqual(expectedNum);
   });
 });
