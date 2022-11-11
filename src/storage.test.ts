@@ -6,9 +6,15 @@ import * as E from 'fp-ts/Either';
 
 jest.mock('@aws-lambda-powertools/logger');
 const LoggerMock = Logger as unknown as jest.Mock;
-LoggerMock.mockImplementation(() => ({ info: jest.fn() }));
+LoggerMock.mockImplementation(() => ({ info: jest.fn(), warn: jest.fn() }));
 
 awsMock.setSDK(path.resolve('node_modules/aws-sdk'));
+
+function newAwsError(code: string): Error {
+  const e = new Error();
+  (e as Error & { code: string}).code = code;
+  return e;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 awsMock.mock('S3', 'listObjectsV2', (params: any, callback: any) => {
@@ -18,10 +24,16 @@ awsMock.mock('S3', 'listObjectsV2', (params: any, callback: any) => {
     });
   } else if (params.Prefix === 'prefix2') {
     callback(null, { Contents: null });
-  } else {
+  } else if (params.Prefix === 'prefix3') {
     callback(null, {
       Contents: [{ Key: null }],
     });
+  } else if (params.Prefix === 'prefix4') {
+    callback(newAwsError('ERROR'));
+  } else if (params.Prefix === 'prefix5') {
+    callback(new Error('ERROR'));
+  } else {
+    callback('ERROR');
   }
 });
 
@@ -31,10 +43,14 @@ awsMock.mock('S3', 'getObject', (params: any, callback: any) => {
     callback(null, {
       Body: Buffer.from('abc', 'utf-8'),
     });
+  } else if (params.Key === 'key2') {
+    callback(newAwsError('NoSuchKey'));
+  } else if (params.Key === 'key3') {
+    callback(newAwsError('ERROR'));
+  } else if (params.Key === 'key4') {
+    callback(new Error('ERROR'));
   } else {
-    const e = new Error();
-    (e as Error & { code: string}).code = 'NoSuchKey';
-    callback(e);
+    callback('ERROR');
   }
 });
 
@@ -53,19 +69,36 @@ describe('Storage', (): void => {
     ${'prefix3'} | ${[]}                             | ${'listObjectsV2がKey: nullを返したときは空リストを返す'}
   `('getKeys: $message', async ({ prefix, expected }) => {
     const keys = await storage.getKeys(prefix)();
-    expect(E.isRight(keys)).toBeTruthy();
+    expect(E.isRight(keys)).toBe(true);
     expect(keys.right).toEqual(expected);
+  });
+
+  test.each`
+    prefix       | message
+    ${'prefix4'} | ${'AWSError'}
+    ${'prefix5'} | ${'Error'}
+    ${'prefix6'} | ${'string'}
+  `('getKeys: $message', async ({ prefix }) => {
+    const keys = await storage.getKeys(prefix)();
+    expect(E.isLeft(keys)).toBe(true);
+    expect(keys.left).toBe('ERROR');
   });
 
   test('getContentString', async () => {
     const content = await storage.getContentString('key1', 'utf-8')();
-    expect(E.isRight(content)).toBeTruthy();
+    expect(E.isRight(content)).toBe(true);
     expect(content.right).toEqual('abc');
   });
 
-  test('getContentString: NoSuchKey', async () => {
-    const content = await storage.getContentString('key2', 'utf-8')();
-    expect(E.isLeft(content)).toBeTruthy();
-    expect(content.left).toBe('NoSuchKey');
+  test.each`
+    key       | message
+    ${'key2'} | ${'NoSuchKey'}
+    ${'key3'} | ${'ERROR'}
+    ${'key4'} | ${'ERROR'}
+    ${'key5'} | ${'ERROR'}
+  `('getContentString: $message', async ({ key, message }) => {
+    const content = await storage.getContentString(key, 'utf-8')();
+    expect(E.isLeft(content)).toBe(true);
+    expect(content.left).toBe(message);
   });
 });

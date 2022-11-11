@@ -14,7 +14,7 @@ describe('get_races', () => {
     const body = fs.readFileSync('testdata/GetRace_Result_1', 'utf-8');
     Storage.getContentString = jest.fn().mockReturnValue(TE.right(body));
     const races = await GetRaces(DateTime.fromISO('2020-01-05'))();
-    expect(E.isRight(races)).toBeTruthy();
+    expect(E.isRight(races)).toBe(true);
 
     if (E.isLeft(races)) {
       return;
@@ -28,5 +28,19 @@ describe('get_races', () => {
       racenumber: 11,
       racename: '中山金杯',
     });
+  });
+
+  test('GetRaces: getKeysでエラー発生', async () => {
+    Storage.getKeys = jest.fn().mockReturnValue(TE.left('ERROR'));
+
+    const races = await GetRaces(DateTime.fromISO('2020-01-05'))();
+
+    expect(E.isLeft(races)).toBe(true);
+
+    if (E.isRight(races)) {
+      return;
+    }
+
+    expect(races.left).toBe(500);
   });
 });
