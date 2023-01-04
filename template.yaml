@@ -9,6 +9,11 @@ Parameters:
     Type: String
   HostedZoneId:
     Type: String
+Globals:
+  Function:
+    Tracing: Active
+  Api:
+    TracingEnabled: True
 Resources:
   KeibaApiFunction:
     Type: AWS::Serverless::Function
