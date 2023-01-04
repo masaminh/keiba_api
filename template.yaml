@@ -19,7 +19,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Timeout: 30
-      Runtime: nodejs18.x
+      Runtime: nodejs16.x
       CodeUri: dist/
       Handler: handler.handler
       Events:
