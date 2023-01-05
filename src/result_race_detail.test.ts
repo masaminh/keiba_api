@@ -6,7 +6,7 @@ describe('ResultRaceDetail', (): void => {
   test.each`
     raceid             | file                                           | expectedRace                                                                                              | targetHorsePos | expectedHorse
     ${'2021062010511'} | ${'testdata/ResultRaceDetail_getRaceDetail_1'} | ${{
-  id: '2021062010511', courseid: '105', coursename: '東京', racenumber: 11, racename: 'ユニコーンＳ',
+  id: '2021062010511', date: '2021-06-20', courseid: '105', coursename: '東京', racenumber: 11, racename: 'ユニコーンＳ',
 }} | ${11}          | ${{
   bracketnumber: 3, horsenumber: 5, horsename: 'イグナイター', horseid: '0001261958',
 }}

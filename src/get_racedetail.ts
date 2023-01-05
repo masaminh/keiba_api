@@ -5,7 +5,7 @@ import * as models from './models';
 import Storage from './storage';
 import RaceDetailFactory from './race_detail_factory';
 
-type RaceDetail = models.definitions['RaceDetail'];
+type RaceDetail = models.components['schemas']['RaceDetail'];
 
 export default (id: string): TE.TaskEither<number, RaceDetail> => F.pipe(
   `jbis/race/${id.substring(0, 8)}/${id.substring(8, 11)}/${id.substring(11, 13)}.htm`,

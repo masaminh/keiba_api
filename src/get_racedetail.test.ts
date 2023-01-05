@@ -11,7 +11,7 @@ describe('get_racedetail', () => {
     ${'testdata/GetRaceDetail_Result_1'} | ${'Race Result'}
   `('GetRaceDetail: $message', async ({ file }) => {
     const expected = {
-      id: '2021062010511', courseid: '105', coursename: '東京', racenumber: 11, racename: 'ユニコーンＳ',
+      id: '2021062010511', date: '2021-06-20', courseid: '105', coursename: '東京', racenumber: 11, racename: 'ユニコーンＳ',
     };
     const expectedNum = 16;
 

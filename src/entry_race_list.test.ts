@@ -12,6 +12,7 @@ describe('EntryRaceList', (): void => {
     const race = races.find((x) => x.id === '2021060610511');
     expect(race).toEqual({
       id: '2021060610511',
+      date: '2021-06-06',
       courseid: '105',
       coursename: '東京',
       racenumber: 11,
