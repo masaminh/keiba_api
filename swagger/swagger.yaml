@@ -1,4 +1,4 @@
-swagger: '2.0'
+openapi: '3.0.0'
 
 info:
   version: "1.0.0"
@@ -15,77 +15,86 @@ paths:
           in: query
           description: レース一覧を取得する日付
           required: true
-          type: string
-          format: date
+          schema: { type: string, format: date }
       responses:
         # Response code
         200:
           description: Successful response
-          schema:
-            title: ArrayOfRaces
-            type: array
-            items:
-              $ref: "#/definitions/Race"
+          content:
+            application/json:
+              schema:
+                title: ArrayOfRaces
+                type: array
+                items:
+                  $ref: "#/components/schemas/Race"
   /v1/races/{raceid}/detail:
     get:
       description: レース詳細を取得する.
       responses:
         200:
           description: Successful response
-          schema:
-            title: RaceDetail
-            $ref: "#/definitions/RaceDetail"
+          content:
+            application/json:
+              schema:
+                title: RaceDetail
+                $ref: "#/components/schemas/RaceDetail"
         404:
           description: "{raceid} not found."
-definitions:
-  Race:
-    type: object
-    properties:
-      id:
-        type: string
-        example: "2019122210611"
-      courseid:
-        type: string
-        example: "106"
-      coursename:
-        type: string
-        example: "中山"
-      racenumber:
-        type: integer
-        format: int32
-        example: 11
-      racename:
-        type: string
-        example: 有馬記念
-    required:
-      - id
-      - courseid
-      - coursename
-      - racenumber
-      - racename
-  RaceDetail:
-    type: object
-    properties:
-      raceinfo:
-        $ref: "#/definitions/Race"
-      horses:
-        type: array
-        items:
-          $ref: "#/definitions/HorseInRace"
-  HorseInRace:
-    type: object
-    properties:
-      bracketnumber:
-        type: integer
-        example: 3
-      horsenumber:
-        type: integer
-        example: 6
-      horseid:
-        type: string
-        example: 0001191589
-      horsename:
-        type: string
-        example: リスグラシュー
-    required:
-      - horsename
+components:
+  schemas:
+    Race:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "2019122210611"
+        date:
+          type: string
+          format: date
+          example: "2019-12-22"
+        courseid:
+          type: string
+          example: "106"
+        coursename:
+          type: string
+          example: "中山"
+        racenumber:
+          type: integer
+          format: int32
+          example: 11
+        racename:
+          type: string
+          example: 有馬記念
+      required:
+        - id
+        - date
+        - courseid
+        - coursename
+        - racenumber
+        - racename
+    RaceDetail:
+      type: object
+      properties:
+        raceinfo:
+          $ref: "#/components/schemas/Race"
+        horses:
+          type: array
+          items:
+            $ref: "#/components/schemas/HorseInRace"
+    HorseInRace:
+      type: object
+      properties:
+        bracketnumber:
+          type: integer
+          example: 3
+        horsenumber:
+          type: integer
+          example: 6
+        horseid:
+          type: string
+          example: 0001191589
+        horsename:
+          type: string
+          example: リスグラシュー
+      required:
+        - horsename

@@ -7,7 +7,7 @@ import * as models from './models';
 import RaceListFactory from './race_list_factory';
 import Storage from './storage';
 
-type Race = models.definitions['Race'];
+type Race = models.components['schemas']['Race'];
 
 const raceCalendarPrefix = 'jbis/race/calendar/';
 

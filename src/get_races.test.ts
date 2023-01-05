@@ -23,6 +23,7 @@ describe('get_races', () => {
     const race = races.right.find((x) => x.id === '2020010510611');
     expect(race).toEqual({
       id: '2020010510611',
+      date: '2020-01-05',
       courseid: '106',
       coursename: '中山',
       racenumber: 11,

@@ -2,8 +2,8 @@ import cheerio from 'cheerio';
 import Course from './course';
 import * as models from './models';
 
-type RaceDetail = models.definitions['RaceDetail'];
-type HorseInRace = models.definitions['HorseInRace'];
+type RaceDetail = models.components['schemas']['RaceDetail'];
+type HorseInRace = models.components['schemas']['HorseInRace'];
 
 export interface HorseSelectors {
   bracketNumber: string;
@@ -26,6 +26,11 @@ export default abstract class {
   protected abstract getHorseSelectors(): HorseSelectors;
 
   public getRaceDetail(): RaceDetail {
+    const date = [
+      this.raceid.substring(0, 4),
+      this.raceid.substring(4, 6),
+      this.raceid.substring(6, 8),
+    ].join('-');
     const courseid = this.raceid.substring(8, 11);
     const coursename = Course.Id2Name(courseid);
     const racenumber = Number(this.raceid.substring(11, 13));
@@ -33,6 +38,7 @@ export default abstract class {
     return {
       raceinfo: {
         id: this.raceid,
+        date,
         courseid,
         coursename,
         racenumber,

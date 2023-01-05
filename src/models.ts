@@ -3,71 +3,92 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/v1/races": {
-    /** レース一覧を取得する. */
+    /** @description レース一覧を取得する. */
     get: {
+      /** @description レース一覧を取得する. */
       parameters: {
+          /** @description レース一覧を取得する日付 */
         query: {
-          /** レース一覧を取得する日付 */
           date: string;
         };
       };
       responses: {
-        /** Successful response */
+        /** @description Successful response */
         200: {
-          schema: definitions["Race"][];
+          content: {
+            "application/json": (components["schemas"]["Race"])[];
+          };
         };
       };
     };
   };
   "/v1/races/{raceid}/detail": {
-    /** レース詳細を取得する. */
+    /** @description レース詳細を取得する. */
     get: {
+      /** @description レース詳細を取得する. */
       responses: {
-        /** Successful response */
+        /** @description Successful response */
         200: {
-          schema: definitions["RaceDetail"];
+          content: {
+            "application/json": components["schemas"]["RaceDetail"];
+          };
         };
-        /** {raceid} not found. */
-        404: unknown;
+        /** @description {raceid} not found. */
+        404: never;
       };
     };
   };
 }
 
-export interface definitions {
-  Race: {
-    /** @example 2019122210611 */
-    id: string;
-    /** @example 106 */
-    courseid: string;
-    /** @example 中山 */
-    coursename: string;
-    /**
-     * Format: int32
-     * @example 11
-     */
-    racenumber: number;
-    /** @example 有馬記念 */
-    racename: string;
+export type webhooks = Record<string, never>;
+
+export interface components {
+  schemas: {
+    Race: {
+      /** @example 2019122210611 */
+      id: string;
+      /**
+       * Format: date 
+       * @example 2019-12-22
+       */
+      date: string;
+      /** @example 106 */
+      courseid: string;
+      /** @example 中山 */
+      coursename: string;
+      /**
+       * Format: int32 
+       * @example 11
+       */
+      racenumber: number;
+      /** @example 有馬記念 */
+      racename: string;
+    };
+    RaceDetail: {
+      raceinfo?: components["schemas"]["Race"];
+      horses?: (components["schemas"]["HorseInRace"])[];
+    };
+    HorseInRace: {
+      /** @example 3 */
+      bracketnumber?: number;
+      /** @example 6 */
+      horsenumber?: number;
+      /** @example 1191589 */
+      horseid?: string;
+      /** @example リスグラシュー */
+      horsename: string;
+    };
   };
-  RaceDetail: {
-    raceinfo?: definitions["Race"];
-    horses?: definitions["HorseInRace"][];
-  };
-  HorseInRace: {
-    /** @example 3 */
-    bracketnumber?: number;
-    /** @example 6 */
-    horsenumber?: number;
-    /** @example 1191589 */
-    horseid?: string;
-    /** @example リスグラシュー */
-    horsename: string;
-  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 
-export interface operations {}
+export type external = Record<string, never>;
 
-export interface external {}
+export type operations = Record<string, never>;
