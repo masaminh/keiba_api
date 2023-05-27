@@ -32,10 +32,8 @@ Resources:
               Ref: KeibaApi
       Environment:
         Variables:
-          REGION:
-            Ref: Region
-          BUCKET:
-            Ref: Bucket
+          REGION: !Ref Region
+          BUCKET: !Ref Bucket
       Policies:
         - Version: 2012-10-17
           Statement:
@@ -60,8 +58,7 @@ Resources:
   KeibaApiFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName:
-        Fn::Sub: /aws/lambda/${KeibaApiFunction}
+      LogGroupName: !Sub /aws/lambda/${KeibaApiFunction}
       RetentionInDays: 30
   KeibaApi:
     Type: AWS::Serverless::Api
@@ -70,21 +67,16 @@ Resources:
       EndpointConfiguration:
         Type: REGIONAL
       Domain:
-        DomainName: 
-          Ref: DomainName
+        DomainName: !Ref DomainName
         CertificateArn:
           Ref: KeibaApiCert
         Route53:
-          HostedZoneId:
-            Ref: HostedZoneId
+          HostedZoneId: !Ref HostedZoneId
   KeibaApiCert:
     Type: AWS::CertificateManager::Certificate
     Properties:
-      DomainName:
-        Ref: DomainName
+      DomainName: !Ref DomainName
       DomainValidationOptions:
-        - DomainName:
-            Ref: DomainName
-          HostedZoneId:
-            Ref: HostedZoneId
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref HostedZoneId
       ValidationMethod: DNS
