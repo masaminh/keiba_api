@@ -43,4 +43,4 @@ jobs:
         run: yarn build
       - name: Deploy
         if: startsWith(github.ref, 'refs/heads/master')
-        run: sam deploy --stack-name KeibaApiProd --s3-bucket ${{ secrets.AWS_SAM_BUCKET_NAME }} --s3-prefix KeibaApiProd --capabilities CAPABILITY_IAM --parameter-overrides "Region=ap-northeast-1 Bucket=${{ secrets.CACHE_BUCKET_NAME}} DomainName=${{ secrets.DOMAIN_NAME }} HostedZoneId=${{ secrets.HOSTEDZONE }}" --no-fail-on-empty-changeset
+        run: sam deploy --stack-name KeibaApiProd --s3-bucket ${{ secrets.AWS_SAM_BUCKET_NAME }} --s3-prefix KeibaApiProd --capabilities CAPABILITY_IAM --parameter-overrides "Region=ap-northeast-1 Bucket=${{ secrets.CACHE_BUCKET_NAME}} DomainName=${{ secrets.DOMAIN_NAME }} HostedZoneId=${{ secrets.HOSTEDZONE }} WafWebAclArn=${{ secrets.WAF_WEBACL_ARN }}" --no-fail-on-empty-changeset
