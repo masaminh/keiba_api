@@ -87,3 +87,4 @@ Resources:
     Properties:
       ResourceArn: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${KeibaApi}/stages/Prod'
       WebACLArn: !Ref WafWebAclArn
+    DependsOn: KeibaApi
