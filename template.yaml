@@ -9,6 +9,8 @@ Parameters:
     Type: String
   HostedZoneId:
     Type: String
+  WafWebAclArn:
+    Type: 'AWS::SSM::Parameter::Value<String>'
 Globals:
   Function:
     Tracing: Active
@@ -80,3 +82,8 @@ Resources:
         - DomainName: !Ref DomainName
           HostedZoneId: !Ref HostedZoneId
       ValidationMethod: DNS
+  WebAclAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${KeibaApi}/stages/Prod'
+      WebACLArn: !Ref WafWebAclArn
