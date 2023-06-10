@@ -4,8 +4,10 @@ import * as E from 'fp-ts/Either';
 import getRaces from './get_races';
 import getRaceDetail from './get_racedetail';
 import Log from './log';
+import Storage from './storage';
 
 const logger = Log.getLogger();
+Storage.initialize(process.env.REGION ?? '', process.env.BUCKET ?? '');
 
 const app = express();
 app.disable('x-powered-by');

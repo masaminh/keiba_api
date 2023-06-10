@@ -5,14 +5,20 @@ import * as TE from 'fp-ts/TaskEither';
 import GetRaces from './get_races';
 import Storage from './storage';
 
+jest.mock('./storage');
+const getKeysMock = jest.spyOn(Storage, 'getKeys');
+const getContentStringMock = jest.spyOn(Storage, 'getContentString');
+
 describe('get_races', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   test('Race result', async () => {
-    Storage.getKeys = jest
-      .fn()
-      .mockReturnValue(TE.right(['jbis/race/calendar/20200105/106']));
+    getKeysMock.mockReturnValue(TE.right(['jbis/race/calendar/20200105/106']));
 
     const body = fs.readFileSync('testdata/GetRace_Result_1', 'utf-8');
-    Storage.getContentString = jest.fn().mockReturnValue(TE.right(body));
+    getContentStringMock.mockReturnValue(TE.right(body));
     const races = await GetRaces(DateTime.fromISO('2020-01-05'))();
     expect(E.isRight(races)).toBe(true);
 
@@ -32,7 +38,7 @@ describe('get_races', () => {
   });
 
   test('GetRaces: getKeysでエラー発生', async () => {
-    Storage.getKeys = jest.fn().mockReturnValue(TE.left('ERROR'));
+    getKeysMock.mockReturnValue(TE.left('ERROR'));
 
     const races = await GetRaces(DateTime.fromISO('2020-01-05'))();
 

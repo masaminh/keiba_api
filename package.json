@@ -11,6 +11,7 @@
     "test": "jest --coverage"
   },
   "devDependencies": {
+    "@aws-sdk/util-stream-node": "^3.350.0",
     "@types/aws-lambda": "^8.10.92",
     "@types/cheerio": "^0.22.23",
     "@types/express": "^4.17.9",
@@ -19,7 +20,7 @@
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
-    "aws-sdk-mock": "^5.1.0",
+    "aws-sdk-client-mock": "^2.1.1",
     "eslint": "^8.10.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-import-resolver-typescript": "^3.5.2",
@@ -35,14 +36,13 @@
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^1.2.1",
+    "@aws-sdk/client-s3": "^3.348.0",
     "@middy/core": "^4.0.9",
     "@vendia/serverless-express": "^4.5.4",
-    "aws-sdk": "^2.1082.0",
     "cheerio": "^1.0.0-rc.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "fp-ts": "^2.13.1",
-    "iconv-lite": "^0.6.2",
     "luxon": "^3.2.1"
   }
 }

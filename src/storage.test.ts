@@ -1,93 +1,94 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import awsMock from 'aws-sdk-mock';
-import path from 'path';
+/* eslint-disable import/no-extraneous-dependencies */
+import { mockClient } from 'aws-sdk-client-mock';
+import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
+/* eslint-enable import/no-extraneous-dependencies */
+import {
+  S3Client, GetObjectCommand, ListObjectsCommand, S3ServiceException, NoSuchKey,
+} from '@aws-sdk/client-s3';
 import { Logger } from '@aws-lambda-powertools/logger';
 import * as E from 'fp-ts/Either';
+import { Readable } from 'stream';
+import Storage from './storage';
 
 jest.mock('@aws-lambda-powertools/logger');
 const LoggerMock = Logger as unknown as jest.Mock;
 LoggerMock.mockImplementation(() => ({ info: jest.fn(), warn: jest.fn() }));
 
-awsMock.setSDK(path.resolve('node_modules/aws-sdk'));
+function getSdkStream(text: string) {
+  const stream = new Readable();
+  stream.push(text);
+  stream.push(null);
 
-function newAwsError(code: string): Error {
-  const e = new Error();
-  (e as Error & { code: string}).code = code;
-  return e;
+  return sdkStreamMixin(stream);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-awsMock.mock('S3', 'listObjectsV2', (params: any, callback: any) => {
-  if (params.Prefix === 'prefix1') {
-    callback(null, {
-      Contents: [{ Key: 'prefix/key1' }, { Key: 'prefix/key2' }],
-    });
-  } else if (params.Prefix === 'prefix2') {
-    callback(null, { Contents: null });
-  } else if (params.Prefix === 'prefix3') {
-    callback(null, {
-      Contents: [{ Key: null }],
-    });
-  } else if (params.Prefix === 'prefix4') {
-    callback(newAwsError('ERROR'));
-  } else if (params.Prefix === 'prefix5') {
-    callback(new Error('ERROR'));
-  } else {
-    callback('ERROR');
-  }
-});
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-awsMock.mock('S3', 'getObject', (params: any, callback: any) => {
-  if (params.Key === 'key1') {
-    callback(null, {
-      Body: Buffer.from('abc', 'utf-8'),
-    });
-  } else if (params.Key === 'key2') {
-    callback(newAwsError('NoSuchKey'));
-  } else if (params.Key === 'key3') {
-    callback(newAwsError('ERROR'));
-  } else if (params.Key === 'key4') {
-    callback(new Error('ERROR'));
-  } else {
-    callback('ERROR');
-  }
-});
-
-process.env.REGION = 'ap-northeast-1';
-process.env.BUCKET = 'bucket';
-
-// ↓importにするとaws-sdkが正しくモック化されないため、ここでrequireしている
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const storage = require('./storage').default;
-
 describe('Storage', (): void => {
+  beforeAll(() => {
+    const s3Mock = mockClient(S3Client);
+
+    s3Mock
+      .on(ListObjectsCommand, { Prefix: 'prefix1' })
+      .resolves({
+        Contents: [{ Key: 'prefix/key1' }, { Key: 'prefix/key2' }],
+      })
+      .on(ListObjectsCommand, { Prefix: 'prefix2' })
+      .resolves({
+        Contents: undefined,
+      })
+      .on(ListObjectsCommand, { Prefix: 'prefix3' })
+      .resolves({
+        Contents: [{ Key: undefined }],
+      })
+      .on(ListObjectsCommand, { Prefix: 'prefix4' })
+      .rejects(new S3ServiceException({
+        name: 'ERROR', $fault: 'client', $metadata: { requestId: 'id' }, message: 'ERROR',
+      }))
+      .on(ListObjectsCommand, { Prefix: 'prefix5' })
+      .rejects('ERROR')
+      .on(GetObjectCommand, { Key: 'key1' })
+      .resolves({ Body: getSdkStream('abc') })
+      .on(GetObjectCommand, { Key: 'key2' })
+      .rejects(new NoSuchKey({ $metadata: { requestId: 'id' }, message: 'ERROR' }))
+      .on(GetObjectCommand, { Key: 'key3' })
+      .rejects(new S3ServiceException({
+        name: 'ERROR', $fault: 'client', $metadata: { requestId: 'id' }, message: 'ERROR',
+      }))
+      .on(GetObjectCommand, { Key: 'key4' })
+      .rejects('ERROR')
+      .on(GetObjectCommand, { Key: 'key5' })
+      .resolves({ Body: undefined });
+  });
+
+  beforeEach(() => {
+    Storage.initialize('ap-northeast-1', 'bucket');
+  });
+
+  afterEach(() => {
+    Storage.uninitialize();
+  });
+
   test.each`
     prefix       | expected                          | message
     ${'prefix1'} | ${['prefix/key1', 'prefix/key2']} | ${'通常時'}
     ${'prefix2'} | ${[]}                             | ${'listObjectsV2がContents: nullを返したときは空リストを返す'}
     ${'prefix3'} | ${[]}                             | ${'listObjectsV2がKey: nullを返したときは空リストを返す'}
   `('getKeys: $message', async ({ prefix, expected }) => {
-    const keys = await storage.getKeys(prefix)();
-    expect(E.isRight(keys)).toBe(true);
-    expect(keys.right).toEqual(expected);
+    const keys = await Storage.getKeys(prefix)();
+    expect(keys).toEqual(E.right(expected));
   });
 
   test.each`
     prefix       | message
     ${'prefix4'} | ${'AWSError'}
     ${'prefix5'} | ${'Error'}
-    ${'prefix6'} | ${'string'}
   `('getKeys: $message', async ({ prefix }) => {
-    const keys = await storage.getKeys(prefix)();
-    expect(E.isLeft(keys)).toBe(true);
-    expect(keys.left).toBe('ERROR');
+    const keys = await Storage.getKeys(prefix)();
+    expect(keys).toEqual(E.left('ERROR'));
   });
 
   test('getContentString', async () => {
-    const content = await storage.getContentString('key1', 'utf-8')();
-    expect(E.isRight(content)).toBe(true);
-    expect(content.right).toEqual('abc');
+    const content = await Storage.getContentString('key1', 'utf-8')();
+    expect(content).toEqual(E.right('abc'));
   });
 
   test.each`
@@ -95,10 +96,93 @@ describe('Storage', (): void => {
     ${'key2'} | ${'NoSuchKey'}
     ${'key3'} | ${'ERROR'}
     ${'key4'} | ${'ERROR'}
-    ${'key5'} | ${'ERROR'}
+    ${'key5'} | ${'GetObjectCommandOutput.Body is null'}
   `('getContentString: $message', async ({ key, message }) => {
-    const content = await storage.getContentString(key, 'utf-8')();
+    const content = await Storage.getContentString(key, 'utf-8')();
+    expect(content).toEqual(E.left(message));
+  });
+});
+
+describe('Storage: Throw no error', () => {
+  beforeAll(() => {
+    const s3Mock = mockClient(S3Client);
+
+    s3Mock
+      .callsFake(() => {
+        // eslint-disable-next-line no-throw-literal
+        throw 'ERROR';
+      });
+  });
+
+  beforeEach(() => {
+    Storage.initialize('ap-northeast-1', 'bucket');
+  });
+
+  afterEach(() => {
+    Storage.uninitialize();
+  });
+
+  it('getKeys', async () => {
+    const keys = await Storage.getKeys('')();
+    expect(keys).toEqual(E.left('ERROR'));
+  });
+
+  it('getContentString', async () => {
+    const content = await Storage.getContentString('', 'utf-8')();
+    expect(content).toEqual(E.left('ERROR'));
+  });
+});
+
+describe('Storage: Throw no error (transformToString)', () => {
+  beforeAll(() => {
+    const s3Mock = mockClient(S3Client);
+
+    s3Mock
+      .on(GetObjectCommand)
+      .resolves({
+        Body: {
+          transformToString: () => {
+            // eslint-disable-next-line no-throw-literal
+            throw 'ERROR';
+          },
+        } as unknown as ReturnType<typeof getSdkStream>,
+      });
+  });
+
+  beforeEach(() => {
+    Storage.initialize('ap-northeast-1', 'bucket');
+  });
+
+  afterEach(() => {
+    Storage.uninitialize();
+  });
+
+  it('getContentString', async () => {
+    const content = await Storage.getContentString('', 'utf-8')();
+    expect(content).toEqual(E.left('ERROR'));
+  });
+});
+
+describe('Storage: Not initialized', () => {
+  beforeAll(() => {
+    const s3Mock = mockClient(S3Client);
+
+    s3Mock
+      .on(ListObjectsCommand, { Prefix: 'prefix1' })
+      .resolves({
+        Contents: [{ Key: 'prefix/key1' }, { Key: 'prefix/key2' }],
+      })
+      .on(GetObjectCommand, { Key: 'key1' })
+      .resolves({ Body: getSdkStream('abc') });
+  });
+
+  it('getKeys', async () => {
+    const keys = await Storage.getKeys('prefix1')();
+    expect(E.isLeft(keys)).toBe(true);
+  });
+
+  it('getKeys', async () => {
+    const content = await Storage.getContentString('key1', 'utf-8')();
     expect(E.isLeft(content)).toBe(true);
-    expect(content.left).toBe(message);
   });
 });

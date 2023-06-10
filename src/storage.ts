@@ -1,6 +1,13 @@
-import aws, { S3 } from 'aws-sdk';
+import {
+  GetObjectCommand,
+  GetObjectCommandOutput,
+  ListObjectsCommand,
+  ListObjectsCommandOutput,
+  S3Client,
+  S3ServiceException,
+  NoSuchKey,
+} from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
-import iconv from 'iconv-lite';
 import * as TE from 'fp-ts/TaskEither';
 import * as F from 'fp-ts/function';
 import Log from './log';
@@ -9,23 +16,20 @@ dotenv.config();
 
 const logger = Log.getLogger();
 
-const region = process.env.REGION ?? '';
-const bucket = process.env.BUCKET ?? '';
-const s3 = new aws.S3({ apiVersion: '2006-03-01', region });
+let bucket: string = '';
+let s3: S3Client | undefined;
 
-type WouldBe<T> = { [P in keyof T]?: unknown }
-
-function isObject<T extends object>(value: unknown): value is WouldBe<T> {
-  return typeof value === 'object'
-        && value !== null;
-}
-
-function isAWSError(arg: unknown): arg is aws.AWSError {
-  return isObject<aws.AWSError>(arg)
-    && typeof arg.code === 'string'
-    && arg instanceof Error;
-}
 export default class Storage {
+  public static initialize(region_: string, bucket_: string) {
+    bucket = bucket_;
+    s3 = new S3Client({ region: region_ });
+  }
+
+  public static uninitialize() {
+    bucket = '';
+    s3 = undefined;
+  }
+
   public static getKeys(prefix: string): TE.TaskEither<string, ReadonlyArray<string>> {
     return F.pipe(
       { Bucket: bucket, Prefix: prefix },
@@ -43,23 +47,28 @@ export default class Storage {
     return F.pipe(
       { Bucket: bucket, Key: key },
       Storage.getS3Object,
-      TE.map((obj) => iconv.decode(obj.Body as Buffer, encoding)),
+      TE.map(Storage.getBodyString(encoding)),
+      TE.flatten,
     );
   }
 
   private static listS3Object(
     params: {Bucket: string, Prefix: string},
-  ): TE.TaskEither<string, S3.ListObjectsV2Output> {
+  ): TE.TaskEither<string, ListObjectsCommandOutput> {
     return TE.tryCatch(
       () => {
-        logger.info('call s3.listObjectV2', { params });
-        return s3.listObjectsV2(params).promise();
+        logger.info('call ListObjectsCommand', { params });
+        if (s3 == null) {
+          throw new Error('Storage: not initialized');
+        }
+        return s3.send(new ListObjectsCommand(params));
       },
       (r) => {
-        logger.warn('s3.listObjectV2 raise Error', { error: r });
+        logger.warn('ListObjectsCommand raise Error', { error: r });
 
-        if (isAWSError(r)) {
-          return r.code;
+        if (r instanceof S3ServiceException) {
+          const { name } = r;
+          return name;
         }
 
         if (r instanceof Error) {
@@ -73,20 +82,23 @@ export default class Storage {
 
   private static getS3Object(
     params: {Bucket: string, Key: string},
-  ): TE.TaskEither<string, S3.GetObjectOutput> {
+  ): TE.TaskEither<string, GetObjectCommandOutput> {
     return TE.tryCatch(
       () => {
-        logger.info('call s3.getObject', { params });
-        return s3.getObject(params).promise();
+        logger.info('call GetObjectCommand', { params });
+        if (s3 == null) {
+          throw new Error('Storage: not initialized');
+        }
+        return s3.send(new GetObjectCommand(params));
       },
       (r) => {
-        if (isAWSError(r)) {
-          const { code } = r;
-          logger[code === 'NoSuchKey' ? 'info' : 'warn']('s3.getObject raise Error', { error: r });
-          return code;
+        if (r instanceof S3ServiceException) {
+          const { name } = r;
+          logger[r instanceof NoSuchKey ? 'info' : 'warn']('GetObjectCommand raise Error', { error: r });
+          return name;
         }
 
-        logger.warn('s3.getObject raise Error', { error: r });
+        logger.warn('GetObjectCommand raise Error', { error: r });
 
         if (r instanceof Error) {
           return r.message;
@@ -94,6 +106,22 @@ export default class Storage {
 
         return `${r}`;
       },
+    );
+  }
+
+  private static getBodyString(
+    encoding: string,
+  ): (arg0: GetObjectCommandOutput) => TE.TaskEither<string, string> {
+    return (output: GetObjectCommandOutput) => TE.tryCatch(
+      () => {
+        if (output.Body == null) {
+          logger.warn('GetObjectCommandOutput.Body is null');
+          throw new Error('GetObjectCommandOutput.Body is null');
+        }
+
+        return output.Body.transformToString(encoding);
+      },
+      (r) => (r instanceof Error ? r.message : `${r}`),
     );
   }
 }
