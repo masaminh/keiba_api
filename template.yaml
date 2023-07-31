@@ -24,6 +24,7 @@ Resources:
       Runtime: nodejs16.x
       CodeUri: dist/
       Handler: handler.handler
+      MemorySize: 160
       Events:
         HttpAny:
           Type: Api
