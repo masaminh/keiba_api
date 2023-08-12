@@ -86,6 +86,5 @@ Resources:
   WebAclAssociation:
     Type: AWS::WAFv2::WebACLAssociation
     Properties:
-      ResourceArn: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${KeibaApi}/stages/Prod'
+      ResourceArn: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${KeibaApi}/stages/${KeibaApi.Stage}'
       WebACLArn: !Ref WafWebAclArn
-    DependsOn: KeibaApi
